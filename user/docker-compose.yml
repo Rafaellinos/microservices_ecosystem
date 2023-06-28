@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+
+  db:
+    image: postgres:12-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_PASSWORD: user123
+      POSTGRES_USER: user
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ${PWD}/pg_data:/var/lib/postgresql/data/pgdata
+    networks:
+      - networkuser
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: userapp
+#    restart: unless-stopped
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - networkuser
+#    depends_on:
+#      - db
+
+networks:
+  networkuser:
+    driver: bridge
