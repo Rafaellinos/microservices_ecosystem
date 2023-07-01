@@ -10,9 +10,7 @@ public interface UserRepository {
     User save(User user);
     Optional<User> findById(Long id);
     Optional<User> findByCpfCnpj(String cpfCnpj);
-
     List<User> findAll();
-
     void deleteById(Long id);
 
 }
