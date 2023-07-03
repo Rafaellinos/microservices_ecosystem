@@ -7,11 +7,15 @@ import com.example.user.infrastructure.web.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -31,12 +35,23 @@ public class UserServiceTest {
         userService = new UserService(userRepository);
     }
 
-    @Test
-    void getAllUsers_ReturnsListOfUserDto() {
+
+    private static Stream<Arguments> inputListOfUsers() {
+        return Stream.of(
+           Arguments.of("Rafael", 3L, "John", 1L),
+           Arguments.of("Yasmin", 5L, "Keitlin", 33L),
+           Arguments.of("Jonh", 5L, "Jefferson", 88L)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("inputListOfUsers")
+    @DisplayName("Service findAll list of users")
+    void getAllUsers_ReturnsListOfUserDto(String userName1, long userId1, String userName2, long userId2) {
 
         // Arrange
-        User user1 = new User("John", 1L);
-        User user2 = new User("Jane", 2L);
+        User user1 = new User(userName1, userId1);
+        User user2 = new User(userName2, userId2);
         List<User> userList = Arrays.asList(user1, user2);
 
         // Stub
@@ -71,9 +86,11 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(emptyUser);
 
         // Act and assert // When
-        Exception exception = assertThrows(UserNotFoundException.class, () -> {
-            userService.getUserById(userId);
-        }, "UserNotFound should have been thrown");
+        Exception exception = assertThrows(
+                UserNotFoundException.class,
+                () -> userService.getUserById(userId),
+                "UserNotFound should have been thrown"
+        );
 
         // Assert // Then
         assertEquals(
